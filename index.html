@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Your answers · Top Choice Mechanical Solutions</title>
+<style>
+:root{--bg:#f1f3f1;--card:#fff;--ink:#1d2220;--mut:#4f5853;--line:#d5dbd6;--acc:#c84a0c;--acc2:#9c3a08;--tint:#fdf1ea;--ok:#1d7448;--okt:#e6f3eb;--no:#b42318;--not:#fbeae8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#121514;--card:#1d2220;--ink:#eef1ee;--mut:#a7b0ab;--line:#333a36;--acc:#f0702e;--acc2:#f59a66;--tint:#3a2216;--ok:#5fc08a;--okt:#173326;--no:#f07167;--not:#3a1c1a;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:16px/1.45 -apple-system,system-ui,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.w{max-width:640px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left)) 120px max(16px,env(safe-area-inset-right));display:flex;flex-direction:column;gap:12px}
+.hd{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--acc);border-radius:12px;padding:16px}
+.biz{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{font-size:24px;line-height:1.2;margin:4px 0 0}
+.sm{font-size:14px;color:var(--mut)}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.c h2{font-size:17px;margin:0}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:14px 0 2px}
+.it{padding:12px 0;border-top:1px solid var(--line)}
+.it:first-of-type{border-top:0}
+.it .t{font-weight:600;overflow-wrap:anywhere}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.seg button{min-height:48px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:16px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.seg button.y[aria-pressed=true]{background:var(--okt);border-color:var(--ok);color:var(--ok)}
+.seg button.n[aria-pressed=true]{background:var(--not);border-color:var(--no);color:var(--no)}
+.was{font-size:13px;color:var(--mut);margin-top:4px}
+.all{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 16px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn:disabled{opacity:.5}
+textarea{width:100%;min-height:88px;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-right))}
+.bar .in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+.bar .btn{width:100%;font-size:17px}
+.done{border-color:var(--ok)}
+.err{color:var(--no);font-weight:600}
+a{color:var(--acc2)}
+</style>
+</head>
+<body>
+<main class="w" id="app"><div class="c">Loading…</div></main>
+<div class="bar" id="bar" hidden><div class="in"><div class="sm" id="cnt"></div><button class="btn p" id="send" type="button" disabled>Send my answers</button></div></div>
+<script>
+/* Top Choice Mechanical Solutions: customer answer page.
+   Holds no customer information itself: everything shown comes from the customer's own link (after the #), which never
+   leaves their phone. "Send my answers" opens one email to TCM, already written; the customer presses Send there. */
+(function(){'use strict';
+/* a different link opened in this same tab: start over with its items */
+window.addEventListener('hashchange',function(){location.reload()});
+var app=document.getElementById('app'),bar=document.getElementById('bar'),send=document.getElementById('send'),cnt=document.getElementById('cnt');
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fail(t){app.innerHTML='<div class="c"><h2>'+esc(t)+'</h2><p class="sm">Open the link again from the email we sent you, or call or email us.</p></div>'}
+var D=null;
+try{var h=String(location.hash||'').replace(/^#/,'');var m=h.match(/(?:^|&)d=([A-Za-z0-9_-]+)/);if(!m)throw 0;
+  var b=m[1].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';
+  D=JSON.parse(decodeURIComponent(escape(atob(b))));if(!D||D.v!==1||!D.to)throw 0}catch(e){fail('This link is not complete.');return}
+var OK=/^[^\s@<>,;"']+@[^\s@<>,;"']+\.[a-z]{2,}$/i;if(!OK.test(D.to)){fail('This link is not complete.');return}
+/* answers: key -> 'y' | 'n' | '' */
+var A={},ITEMS=[];
+(D.j||[]).forEach(function(j){(j.i||[]).forEach(function(x){ITEMS.push({j:j,k:String(x[0]),t:String(x[1]||''),was:x[2]||''})})});
+(D.s||[]).forEach(function(s){ITEMS.push({j:null,k:'SG:'+s[0],sg:String(s[0]),t:String(s[1]||''),was:s[2]||''})});
+if(!ITEMS.length){fail('There is nothing waiting for your answer.');return}
+ITEMS.forEach(function(x){A[x.k]=x.was==='a'?'y':x.was==='d'?'n':''});
+function itemHTML(x){var was=x.was==='a'?'You approved this before':x.was==='d'?'You said not now before':'';
+  return '<div class="it" data-k="'+esc(x.k)+'"><div class="t">'+esc(x.t)+'</div>'+(was?'<div class="was">'+esc(was)+'</div>':'')+
+  '<div class="seg" role="group" aria-label="'+esc(x.t)+'"><button type="button" class="y" data-v="y" aria-pressed="false">&#10003; Approve</button><button type="button" class="n" data-v="n" aria-pressed="false">Not now</button></div></div>'}
+var h='<div class="hd"><div class="biz">'+esc(D.b||'Top Choice Mechanical Solutions Inc.')+'</div><h1>'+esc(D.c||'Your answers')+'</h1><div class="sm" style="margin-top:6px">Tap <b>Approve</b> or <b>Not now</b> on each item, then <b>Send my answers</b>. Your email app opens with everything written; just press Send.</div>'+
+  '<div class="all"><button class="btn" type="button" id="allY">&#10003; Approve all</button><button class="btn" type="button" id="clr">Clear</button></div></div>';
+(D.j||[]).forEach(function(j){var ws=ITEMS.filter(function(x){return x.j===j&&x.k.charAt(0)==='L'}),ps=ITEMS.filter(function(x){return x.j===j&&x.k.charAt(0)==='P'});if(!ws.length&&!ps.length)return;
+  h+='<div class="c"><div class="sm">'+esc(j.n||'')+'</div><h2>'+esc(j.t||'Work order')+'</h2>'+(ws.length?'<div class="lbl">Work to be done</div>'+ws.map(itemHTML).join(''):'')+(ps.length?'<div class="lbl">Parts to order</div>'+ps.map(itemHTML).join(''):'')+'</div>'});
+var sgs=ITEMS.filter(function(x){return !x.j});if(sgs.length)h+='<div class="c"><h2>Suggested work</h2>'+sgs.map(itemHTML).join('')+'</div>';
+h+='<div class="c"><label class="lbl" for="cm" style="display:block;margin-top:0">Comment for us (optional)</label><textarea id="cm" maxlength="500" placeholder="e.g. The tractor is in the north shed. Call before you come."></textarea></div>';
+h+='<div class="c" id="out" hidden></div><div class="sm" style="text-align:center">'+esc(D.b||'')+(D.p?' &middot; '+esc(D.p):'')+'<br>'+esc(D.to)+'</div>';
+app.innerHTML=h;bar.hidden=false;
+function paint(){var n=0,y=0,no=0;ITEMS.forEach(function(x){var v=A[x.k];if(v)n++;if(v==='y')y++;if(v==='n')no++;var el=app.querySelector('[data-k="'+(window.CSS&&CSS.escape?CSS.escape(x.k):x.k)+'"]');if(!el)return;
+    el.querySelector('.y').setAttribute('aria-pressed',v==='y'?'true':'false');el.querySelector('.n').setAttribute('aria-pressed',v==='n'?'true':'false')});
+  cnt.textContent=n?(y+' approved'+(no?', '+no+' not now':'')+(n<ITEMS.length?' · '+(ITEMS.length-n)+' not answered':'')):'Tap Approve or Not now on each item';send.disabled=!n}
+app.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-v]');if(!b)return;var k=b.closest('.it').getAttribute('data-k');A[k]=A[k]===b.getAttribute('data-v')?'':b.getAttribute('data-v');paint()});
+document.getElementById('allY').onclick=function(){ITEMS.forEach(function(x){A[x.k]='y'});paint()};
+document.getElementById('clr').onclick=function(){ITEMS.forEach(function(x){A[x.k]=''});paint()};
+/* the email: plain words first, then the reference lines TCM reads (one per item) */
+function mail(){var yes=[],no=[],ref=[];var cm=String(document.getElementById('cm').value||'').trim().slice(0,500);
+  ITEMS.forEach(function(x){var v=A[x.k];if(!v)return;var label=(x.j?x.j.n+' ':'')+x.t;(v==='y'?yes:no).push('- '+label);
+    ref.push((x.j?'TCM-WO-'+x.j.r+'~'+x.k:'TCM-SG-'+x.sg)+' '+(v==='y'?'YES':'NO'))});
+  var jobs=(D.j||[]).map(function(j){return j.n}).filter(Boolean);
+  var body='My answers'+(jobs.length?' for '+jobs.join(', '):'')+':\n\n'+(yes.length?'APPROVED\n'+yes.join('\n')+'\n\n':'')+(no.length?'NOT NOW\n'+no.join('\n')+'\n\n':'')+'Comment: '+cm+'\n\n(Reference TCM-LIST. Please leave these lines as they are.)\n'+ref.join('\n');
+  var sub='My answers TCM-LIST'+(jobs.length?' – '+jobs.join(', '):'');return{sub:sub.slice(0,150),body:body}}
+send.onclick=function(){var m=mail(),E=encodeURIComponent;var href='mailto:'+D.to+'?subject='+E(m.sub)+'&body='+E(m.body);
+  var gm='https://mail.google.com/mail/?view=cm&fs=1&to='+E(D.to)+'&su='+E(m.sub)+'&body='+E(m.body);
+  var out=document.getElementById('out');out.hidden=false;out.className='c done';
+  out.innerHTML='<h2>Almost done</h2><p>Your email app should be open with your answers written. <b>Press Send there.</b></p><p class="sm">If nothing opened:</p><div class="all"><a class="btn p" href="'+esc(href)+'">Open my email app</a><a class="btn" href="'+esc(gm)+'" target="_blank" rel="noopener">Open in Gmail</a><button class="btn" type="button" id="cp">Copy the email</button></div><p class="sm" id="cpm"></p>';
+  document.getElementById('cp').onclick=function(){var t='To: '+D.to+'\nSubject: '+m.sub+'\n\n'+m.body;var done=function(){document.getElementById('cpm').textContent='Copied. Paste it into a new email to '+D.to+' and send it.'};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,function(){prompt('Copy this email:',t)});else prompt('Copy this email:',t)};
+  out.scrollIntoView({behavior:'smooth',block:'start'});location.href=href};
+paint();
+})();
+</script>
+</body>
+</html>
